@@ -7,6 +7,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 import joblib
 import os
 import logging
+from app.ml.feature_engineering import FEATURE_COLUMNS
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -28,11 +29,11 @@ class FraudDetectionModel:
         
         df = pd.read_csv(training_data_path)
         
-        feature_cols = [col for col in df.columns if col != 'is_fraud']
-        X = df[feature_cols].fillna(0)
+        # Enforce column order
+        X = df[FEATURE_COLUMNS].fillna(0)
         y = df['is_fraud']
         
-        logger.info(f"Training on {len(df)} samples, {len(feature_cols)} features")
+        logger.info(f"Training on {len(df)} samples, {len(FEATURE_COLUMNS)} features")
         
         self.scaler = StandardScaler()
         X_scaled = self.scaler.fit_transform(X)
@@ -57,7 +58,7 @@ class FraudDetectionModel:
         logger.info("\n=== Model Performance ===")
         logger.info(classification_report(y_test, y_pred))
         
-        self.feature_names = feature_cols
+        self.feature_names = FEATURE_COLUMNS
         
         return self.model
     
