@@ -34,6 +34,7 @@ def test_process_normal_transaction():
     assert "transaction_id" in data
     assert "fraud_score" in data
     assert data["fraud_score"] < 0.50
+    assert data["decision"] == "APPROVED"
 
 def test_process_suspicious_transaction():
     """Test suspicious transaction (should be BLOCKED)"""
@@ -50,6 +51,7 @@ def test_process_suspicious_transaction():
     response = client.post("/api/v1/transactions/process", json=payload)
     assert response.status_code == 200
     data = response.json()
+    assert data["fraud_score"] > 0.80
     assert data["decision"] in ["BLOCKED", "HOLD"]
 
 def test_get_status():
