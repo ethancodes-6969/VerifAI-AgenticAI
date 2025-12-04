@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+env/
+*.egg-info/
+
+# Node / Flutter build artifacts
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub/
+
+# System
+.DS_Store
+*.log
+
+# Ignore docs/markdown (you said don't push plan md files)
+*.md
+
+# Secrets / env
+.env
+*.pem
+secrets/
