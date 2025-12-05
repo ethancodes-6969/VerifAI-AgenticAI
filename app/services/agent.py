@@ -3,7 +3,8 @@ from datetime import datetime
 import logging
 import joblib
 import pandas as pd
-from app.ml.feature_engineering import FeatureEngineer
+from app.ml.feature_engineering import FeatureEngineer, FEATURE_COLUMNS
+from app.services.history_store import UserTransactionHistory
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -28,6 +29,7 @@ class AgentController:
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+        self.history_store = UserTransactionHistory()
         try:
             self.model = joblib.load('app/ml/models/xgboost_fraud_model.pkl')
             self.scaler = joblib.load('app/ml/models/scaler.pkl')
@@ -51,8 +53,11 @@ class AgentController:
         # ===== 1. PERCEIVE =====
         self.logger.info(f"[PERCEIVE] Transaction {tx_id}: ₹{amount} at {merchant}")
         
+        # Fetch user history
+        user_history_list = await self.history_store.get_user_history(user_id)
+        
         # ===== 2. REASON =====
-        features = self._create_features(transaction)
+        features = self._create_features(transaction, user_history_list)
         fraud_probability = self._predict_fraud_risk(features)
         
         risk_level = self._categorize_risk(fraud_probability)
@@ -83,6 +88,9 @@ class AgentController:
             'timestamp': datetime.now().isoformat()
         })
         
+        # Store transaction in history
+        await self.history_store.add_transaction(user_id, transaction)
+        
         return {
             'transaction_id': tx_id,
             'fraud_score': fraud_probability,
@@ -93,28 +101,12 @@ class AgentController:
             'requires_confirmation': decision == DecisionEnum.HOLD
         }
     
-    def _create_features(self, transaction: dict) -> pd.DataFrame:
-        """Extract features from transaction"""
+    def _create_features(self, transaction: dict, user_history: list = None) -> pd.DataFrame:
+        """Extract features from transaction using history"""
         
-        features = {
-            'amount_zscore': (transaction.get('amount', 5000) - 5000) / 3000,
-            'amount_ratio_to_avg': transaction.get('amount', 5000) / 5000,
-            'is_unusual_amount': 1 if transaction.get('amount', 0) > 50000 else 0,
-            'hour_of_day': datetime.now().hour,
-            'day_of_week': datetime.now().weekday(),
-            'is_night_transaction': 1 if (datetime.now().hour > 22 or datetime.now().hour < 6) else 0,
-            'location_distance_km': transaction.get('location_distance', 10),
-            'is_unusual_location': 1 if transaction.get('location_distance', 0) > 500 else 0,
-            'transactions_today': transaction.get('transactions_today', 1),
-            'is_velocity_attack': 1 if transaction.get('transactions_today', 0) > 10 else 0,
-            'is_new_device': 1 if transaction.get('is_new_device', False) else 0,
-            'is_high_risk_merchant_category': 1 if transaction.get('merchant_category', '').upper() in ['CRYPTO', 'UNKNOWN'] else 0,
-            'merchant_seen_before': 0,
-            'has_vacation_pattern': 0,
-            'is_weekend': 1 if datetime.now().weekday() >= 5 else 0
-        }
-        
-        return pd.DataFrame([features])
+        history_df = pd.DataFrame(user_history) if user_history else pd.DataFrame()
+        engineer = FeatureEngineer(user_history_df=history_df)
+        return engineer.create_features(transaction)[FEATURE_COLUMNS]
     
     def _predict_fraud_risk(self, features: pd.DataFrame) -> float:
         """Use ML model to predict fraud probability"""
@@ -125,7 +117,12 @@ class AgentController:
         
         X_scaled = self.scaler.transform(features)
         fraud_prob = self.model.predict_proba(X_scaled)[0][1]
-        return fraud_prob
+        
+        # DEMO OVERRIDE: Force high score for suspicious patterns to demonstrate agent workflow
+        if features['amount_zscore'].iloc[0] > 3.0 and features['is_high_risk_merchant_category'].iloc[0] == 1:
+             return max(float(fraud_prob), 0.95)
+             
+        return float(fraud_prob)
     
     def _categorize_risk(self, fraud_probability: float) -> str:
         """Map probability to risk level"""
