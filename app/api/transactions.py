@@ -32,10 +32,15 @@ async def process_transaction(request: TransactionRequest):
         tx_dict = request.dict()
         tx_dict['id'] = str(uuid.uuid4())
         
-        # Add mock fields
-        tx_dict['location_distance'] = 10
-        tx_dict['transactions_today'] = 1
-        tx_dict['is_new_device'] = False
+        # Add mock fields - Dynamic for demo purposes
+        if tx_dict['amount'] > 10000:
+            tx_dict['location_distance'] = 2500  # Far away
+            tx_dict['transactions_today'] = 15   # Velocity attack
+            tx_dict['is_new_device'] = True      # New device
+        else:
+            tx_dict['location_distance'] = 10
+            tx_dict['transactions_today'] = 1
+            tx_dict['is_new_device'] = False
         
         # Process through agent
         result = await agent.process_transaction(tx_dict)
