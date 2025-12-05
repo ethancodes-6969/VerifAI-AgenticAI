@@ -26,6 +26,19 @@ class Settings(BaseSettings):
     ML_MODEL_PATH: str = "app/ml/models/xgboost_fraud_model.pkl"
     SCALER_PATH: str = "app/ml/models/scaler.pkl"
     
+    # Email Configuration
+    EMAIL_SENDER: str = "krishsanghavi09@gmail.com"
+    EMAIL_PASSWORD: str = "uoav zcfd jtks takd"  # Gmail App Password
+    SMTP_SERVER: str = "smtp.gmail.com"
+    SMTP_PORT: int = 465
+
+    # Support Configuration
+    SUPPORT_PHONE: str = "+91-1800-123-4567"
+    SUPPORT_EMAIL: str = "support@verifai.com"
+
+    # Logo URL (GitHub raw or CDN)
+    LOGO_URL: str = "https://raw.githubusercontent.com/ethancodes-6969/VerifAI-AgenticAI/main/assets/verifai-logo.png"
+    
     class Config:
         env_file = ".env"
 

@@ -5,6 +5,7 @@ import joblib
 import pandas as pd
 from app.ml.feature_engineering import FeatureEngineer, FEATURE_COLUMNS
 from app.services.history_store import UserTransactionHistory
+from app.services.email_service import EmailService
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,6 +31,7 @@ class AgentController:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.history_store = UserTransactionHistory()
+        self.email = EmailService()
         try:
             self.model = joblib.load('app/ml/models/xgboost_fraud_model.pkl')
             self.scaler = joblib.load('app/ml/models/scaler.pkl')
@@ -49,6 +51,8 @@ class AgentController:
         user_id = transaction['user_id']
         amount = transaction['amount']
         merchant = transaction['merchant']
+        email = transaction.get('email')
+        merchant_category = transaction.get('merchant_category', 'UNKNOWN')
         
         # ===== 1. PERCEIVE =====
         self.logger.info(f"[PERCEIVE] Transaction {tx_id}: ₹{amount} at {merchant}")
@@ -77,7 +81,7 @@ class AgentController:
         self.logger.info(f"[DECIDE] Decision: {decision.value}")
         
         # ===== 4. ACT =====
-        actions = self._execute_action(decision, tx_id, user_id, amount, merchant)
+        actions = await self._execute_action(decision, tx_id, user_id, amount, merchant, email, merchant_category)
         self.logger.info(f"[ACT] Actions: {actions}")
         
         # ===== 5. LEARN =====
@@ -136,22 +140,45 @@ class AgentController:
         else:
             return "MINIMAL"
     
-    def _execute_action(self, decision, tx_id, user_id, amount, merchant) -> list:
-        """Execute autonomous actions based on decision"""
+    async def _execute_action(self, decision, tx_id, user_id, amount, merchant, email: str = None, category: str = "UNKNOWN") -> list:
+        """Execute autonomous actions with real email alerts"""
         
         actions = []
         
         if decision == DecisionEnum.BLOCK:
             actions.append("❌ TRANSACTION_BLOCKED")
-            actions.append("📱 WHATSAPP_ALERT_SENT")
-            actions.append("🔒 ACCOUNT_TEMP_FROZEN")
+            
+            if email:
+                email_result = await self.email.send_fraud_alert(
+                    email, user_id, amount, merchant, 0.95, category, tx_id=tx_id
+                )
+                if email_result.get("success"):
+                    actions.append("📧 FRAUD_ALERT_SENT")
+            
+            # Send locked account email too
+            if email:
+                await self.email.send_account_locked(email, user_id, tx_id=tx_id)
+                actions.append("🔒 ACCOUNT_LOCKED_EMAIL_SENT")
+        
         elif decision == DecisionEnum.HOLD:
             actions.append("⏸️ TRANSACTION_HELD")
-            actions.append("📱 VERIFICATION_REQUEST_SENT")
-        else:
-            actions.append("✅ TRANSACTION_APPROVED")
+            
+            if email:
+                email_result = await self.email.send_verification_required(
+                    email, user_id, amount, merchant, 0.65, tx_id=tx_id
+                )
+                if email_result.get("success"):
+                    actions.append("📧 VERIFICATION_EMAIL_SENT")
         
-        # TODO: Actually send WhatsApp, update database, etc.
+        else:  # APPROVE
+            actions.append("✅ TRANSACTION_APPROVED")
+            
+            if email:
+                email_result = await self.email.send_transaction_approved(
+                    email, user_id, amount, merchant, tx_id=tx_id
+                )
+                if email_result.get("success"):
+                    actions.append("📧 CONFIRMATION_EMAIL_SENT")
         
         return actions
     

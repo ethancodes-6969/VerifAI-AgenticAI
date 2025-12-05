@@ -15,6 +15,7 @@ class TransactionRequest(BaseModel):
     device_type: str
     device_ip: str
     user_location: Dict[str, float]
+    email: Optional[str] = None
 
 class TransactionResponse(BaseModel):
     id: str
