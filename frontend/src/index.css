@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* VerifAI Luxe Theme - HSL Values */
+
+    /* Background: #F4F7FA -> 210 29% 97% */
+    --background: 210 29% 97%;
+
+    /* Foreground: darker -> 212 62% 9% */
+    --foreground: 212 62% 9%;
+
+    /* Primary: slightly richer -> 208 77% 15% */
+    --primary: 208 77% 15%;
+    --primary-foreground: 0 0% 100%;
+
+    --primary-light: 208 65% 25%;
+    /* #164268 */
+    --primary-dark: 216 81% 11%;
+    /* darker */
+
+    /* Secondary: #1FA8A8 -> 179 69% 39% */
+    --secondary: 179 69% 39%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-light: 179 58% 48%;
+    /* #34C3C3 */
+    --secondary-dark: 179 71% 30%;
+    /* #168282 */
+
+    /* Accent: #34C38F -> 158 58% 45% (slightly darker) */
+    --accent: 158 58% 45%;
+    --accent-foreground: 0 0% 100%;
+    --accent-light: 157 60% 60%;
+    /* #5CD6A8 */
+    --accent-dark: 158 59% 38%;
+    /* #289970 */
+
+    /* Surface: #FFFFFF -> 0 0% 100% */
+    --surface: 0 0% 100%;
+
+    /* Text */
+    --text-primary: 212 62% 9%;
+    /* match newer foreground */
+    --text-muted: 220 9% 46%;
+    /* #6B7280 */
+
+    /* Border Tokens */
+    --border: 214.3 31.8% 91.4%;
+    --border-foreground: 212 59% 11%;
+    --border-subtle: 220 13% 91%;
+
+    /* Status */
+    --status-error: 358 66% 50%;
+    /* #D52C2C */
+    --status-warning: 43 100% 45%;
+    /* #E6A600 */
+    --status-success: 158 58% 48%;
+    /* #34C38F */
+
+    /* Shadcn/UI Defaults mapped to our theme */
+    --card: 0 0% 100%;
+    --card-foreground: 212 59% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 212 59% 11%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 208 77% 15%;
+    /* Primary color for rings */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark mode overrides if needed later */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    /* ... other dark mode vars */
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased font-sans;
+  }
+}
+
+/* Custom Utilities */
+.text-sheen {
+  text-shadow: 0 2px 8px rgba(11, 26, 43, 0.06);
+}
+
+.btn-strong-shadow {
+  box-shadow: 0 30px 40px rgba(11, 26, 43, 0.12);
+}
+
+.gradient-stroke {
+  -webkit-text-stroke: 0.6px rgba(11, 26, 43, 0.06);
+}
