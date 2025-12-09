@@ -98,3 +98,22 @@
 .gradient-stroke {
   -webkit-text-stroke: 0.6px rgba(11, 26, 43, 0.06);
 }
+
+/* Premium glow and ripple */
+.logo-glow {
+  background: linear-gradient(135deg, rgba(10, 63, 107, 0.12), rgba(50, 184, 198, 0.08));
+  filter: blur(10px);
+  border-radius: 8px;
+}
+
+.ripple {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.06) 40%, transparent 60%);
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 420ms cubic-bezier(.22, .9, .31, 1), opacity 420ms ease;
+}
+
+.ripple.ripple-active {
+  transform: scale(3.5);
+  opacity: 1;
+}

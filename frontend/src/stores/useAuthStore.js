@@ -16,7 +16,7 @@ const useAuthStore = create(
             login: async (identifier, password) => {
                 set({ isLoading: true, error: null });
                 try {
-                    const response = await api.post('/auth/login', { identifier, password });
+                    const response = await api.post('/auth/login', { email: identifier, password });
                     const { access_token, refresh_token, user } = response.data;
 
                     setAuthToken(access_token);

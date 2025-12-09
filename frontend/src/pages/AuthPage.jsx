@@ -118,7 +118,7 @@ const AuthPage = () => {
 
     const handleGoogleLogin = () => {
         // Redirect to backend Google auth endpoint
-        window.location.href = 'http://localhost:8001/api/auth/google/login';
+        window.location.href = 'http://localhost:8000/api/auth/google/login';
     };
 
     return (

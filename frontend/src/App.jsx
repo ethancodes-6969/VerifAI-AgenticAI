@@ -8,9 +8,9 @@ import { Navigate } from 'react-router-dom';
 
 import GoogleCallback from './pages/GoogleCallback';
 import ProtectedRoute from './components/ProtectedRoute';
-
-// Placeholder components for routes not yet implemented
-const Dashboard = () => <div className="p-20 text-center">Dashboard (Authenticated)</div>;
+import DashboardPage from './pages/DashboardPage';
+import FeaturesPage from './pages/FeaturesPage';
+import AboutPage from './pages/AboutPage';
 
 function App() {
   return (
@@ -18,6 +18,8 @@ function App() {
       <Toaster position="top-right" />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/features" element={<FeaturesPage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/auth/google/callback" element={<GoogleCallback />} />
         <Route path="/login" element={<Navigate to="/auth?view=login" replace />} />
@@ -28,7 +30,7 @@ function App() {
           path="/dashboard/*"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <DashboardPage />
             </ProtectedRoute>
           }
         />

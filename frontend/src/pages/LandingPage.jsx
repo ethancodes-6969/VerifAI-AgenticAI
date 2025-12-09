@@ -1,14 +1,27 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Activity, Bell, Smartphone, ArrowRight, CheckCircle } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import Navbar from '../components/Navbar';
 import githubDark from "../assets/github-dark.svg";
+import DemoSlideshow from './DemoSlideshow';
 
 const LandingPage = () => {
+    const navigate = useNavigate();
+    const [isDemoOpen, setIsDemoOpen] = useState(false);
+
     return (
         <div className="min-h-screen bg-background font-sans overflow-hidden">
             <Navbar />
+            <AnimatePresence>
+                {isDemoOpen && (
+                    <DemoSlideshow
+                        isOpen={isDemoOpen}
+                        onClose={() => setIsDemoOpen(false)}
+                    />
+                )}
+            </AnimatePresence>
 
             {/* HERO SECTION */}
             <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
@@ -46,10 +59,19 @@ const LandingPage = () => {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4">
-                                <Button size="lg" className="shadow-lg shadow-primary/20 btn-strong-shadow bg-primary text-white hover:bg-primary-light">
+                                <Button
+                                    size="lg"
+                                    className="shadow-lg shadow-primary/20 btn-strong-shadow bg-primary text-white hover:bg-primary-light"
+                                    onClick={() => navigate('/auth?view=signup')}
+                                >
                                     Get Started <ArrowRight className="ml-2 h-5 w-5" />
                                 </Button>
-                                <Button variant="outline" size="lg" className="text-primary/90 border-border-subtle hover:bg-primary/5">
+                                <Button
+                                    variant="outline"
+                                    size="lg"
+                                    className="text-primary/90 border-border-subtle hover:bg-primary/5"
+                                    onClick={() => setIsDemoOpen(true)}
+                                >
                                     View Demo
                                 </Button>
                             </div>
@@ -168,7 +190,11 @@ const LandingPage = () => {
                 <div className="max-w-4xl mx-auto px-4 text-center">
                     <h2 className="text-4xl font-bold text-primary leading-tight mb-6 text-sheen">Ready to secure your transactions?</h2>
                     <p className="text-xl text-sheen /80 mb-10">Join thousands of businesses trusting VerifAI for their fraud prevention.</p>
-                    <Button size="lg" className="bg-accent text-white hover:bg-accent-light font-bold px-10 py-4 h-auto text-lg shadow-xl shadow-black/20">
+                    <Button
+                        size="lg"
+                        className="bg-accent text-white hover:bg-accent-light font-bold px-10 py-4 h-auto text-lg shadow-xl shadow-black/20"
+                        onClick={() => navigate('/auth?view=signup')}
+                    >
                         Get Started Now
                     </Button>
                 </div>

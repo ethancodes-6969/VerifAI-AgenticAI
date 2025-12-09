@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 # Import routers
-from app.api import transactions, users
+from app.api import transactions, users, auth, demo
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -30,6 +30,8 @@ app.add_middleware(
 # Include routers
 app.include_router(transactions.router)
 app.include_router(users.router)
+app.include_router(auth.router)
+app.include_router(demo.router)
 
 # Root endpoint
 @app.get("/")
