@@ -583,11 +583,14 @@ class EmailService:
         self,
         user_email: str,
         user_role: str,
+        user_name: str,
+        user_company: str,
+        user_requirement: str = None
     ) -> dict:
         """Send demo request email to support team"""
         
         recipient_email = "krishsanghavi09@gmail.com"
-        subject = f" New Demo Request from {user_role}"
+        subject = f" New Demo Request from {user_company}"
         timestamp = datetime.now().strftime("%d %b %Y, %I:%M %p")
         LOGO_URL = "https://raw.githubusercontent.com/ethancodes-6969/VerifAI-AgenticAI/main/assets/verifai-logo.png"
         
@@ -613,7 +616,7 @@ class EmailService:
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="vertical-align:middle;">
-                    <!-- Logo placeholder (replace {LOGO_URL} with absolute logo url) -->
+                    <!-- Logo placeholder (replace {{LOGO_URL}} with absolute logo url) -->
                     <img src="{LOGO_URL}" alt="VerifAI" width="36" height="36" style="vertical-align:middle;border-radius:6px;display:inline-block;object-fit:contain"/>
                     <span style="display:inline-block;margin-left:12px;vertical-align:middle;font-weight:700;font-size:16px;line-height:1;color:#ffffff;">
                       VerifAI
@@ -643,6 +646,14 @@ class EmailService:
                   <td style="padding:12px 14px;background:#ffffff;border-bottom:1px solid rgba(10,47,79,0.03);">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                       <tr>
+                        <td style="font-size:13px;color:#444;font-weight:600;padding-bottom:6px;">Name</td>
+                        <td style="font-size:13px;color:#0b1a2b;text-align:right;padding-bottom:6px;">{user_name}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:13px;color:#444;font-weight:600;padding-bottom:6px;">Company</td>
+                        <td style="font-size:13px;color:#0b1a2b;text-align:right;padding-bottom:6px;">{user_company}</td>
+                      </tr>
+                      <tr>
                         <td style="font-size:13px;color:#444;font-weight:600;padding-bottom:6px;">User Email</td>
                         <td style="font-size:13px;color:#0b1a2b;text-align:right;padding-bottom:6px;">
                           <a href="mailto:{user_email}" style="color:#0a2f4f;text-decoration:none;font-weight:600;">{user_email}</a>
@@ -652,6 +663,15 @@ class EmailService:
                       <tr>
                         <td style="font-size:13px;color:#444;font-weight:600;padding-top:8px;">Role</td>
                         <td style="font-size:13px;color:#0b1a2b;text-align:right;padding-top:8px;">{user_role}</td>
+                      </tr>
+                      
+                      <tr>
+                        <td style="font-size:13px;color:#444;font-weight:600;padding-top:8px;vertical-align:top;" colspan="2">
+                          <div style="margin-top:8px;margin-bottom:4px;">Requirements:</div>
+                          <div style="font-weight:400;color:#0b1a2b;background:#f9f9f9;padding:8px;border-radius:4px;font-size:13px;line-height:1.4;">
+                            {user_requirement if user_requirement else "No specific requirements provided."}
+                          </div>
+                        </td>
                       </tr>
                     </table>
                   </td>

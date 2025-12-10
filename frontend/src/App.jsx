@@ -11,6 +11,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 import DashboardPage from './pages/DashboardPage';
 import FeaturesPage from './pages/FeaturesPage';
 import AboutPage from './pages/AboutPage';
+import DashboardLayout from './components/Dashboard/DashboardLayout';
+import TransactionsPage from './pages/TransactionsPage';
+import SettingsPage from './pages/SettingsPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -25,15 +29,19 @@ function App() {
         <Route path="/login" element={<Navigate to="/auth?view=login" replace />} />
         <Route path="/signup" element={<Navigate to="/auth?view=signup" replace />} />
 
-        {/* Protected Routes */}
+        {/* Protected Dashboard Routes */}
         <Route
-          path="/dashboard/*"
           element={
             <ProtectedRoute>
-              <DashboardPage />
+              <DashboardLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
       </Routes>
     </Router>
   );

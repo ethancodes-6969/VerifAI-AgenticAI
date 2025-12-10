@@ -22,9 +22,12 @@ import { Button } from "../components/ui/Button";
 
 const SLIDE_DURATION = 5000;
 
+import ContactModal from "../components/ContactModal";
+
 const DemoSlideshow = ({ isOpen, onClose }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
+    const [isContactOpen, setIsContactOpen] = useState(false);
     const navigate = useNavigate();
 
     const slides = [
@@ -45,99 +48,112 @@ const DemoSlideshow = ({ isOpen, onClose }) => {
 
     // Auto-advance
     useEffect(() => {
-        if (!isOpen || isPaused) return;
+        if (!isOpen || isPaused || isContactOpen) return; // Pause if contact modal is open
         const timer = setInterval(nextSlide, SLIDE_DURATION);
         return () => clearInterval(timer);
-    }, [isOpen, isPaused, nextSlide]);
+    }, [isOpen, isPaused, isContactOpen, nextSlide]);
 
     // Keyboard support
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (!isOpen) return;
+            if (!isOpen || isContactOpen) return; // Disable keyboard nav if contact modal open
             if (e.key === "ArrowRight") nextSlide();
             if (e.key === "ArrowLeft") prevSlide();
             if (e.key === "Escape") onClose();
         };
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [isOpen, nextSlide, prevSlide, onClose]);
+    }, [isOpen, isContactOpen, nextSlide, prevSlide, onClose]);
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="relative w-full max-w-5xl bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col h-[600px] md:h-[650px]"
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-            >
-                {/* Close Button */}
-                <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 transition-colors"
+        <React.Fragment>
+            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="relative w-full max-w-5xl bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col h-[600px] md:h-[650px]"
+                    onMouseEnter={() => setIsPaused(true)}
+                    onMouseLeave={() => setIsPaused(false)}
                 >
-                    <X size={24} className="text-text-primary" />
-                </button>
-
-                {/* Slides Container */}
-                <div className="flex-1 relative overflow-hidden p-6 md:p-12">
-                    <AnimatePresence mode="wait">
-                        <SlideContent
-                            key={currentSlide}
-                            step={currentSlide}
-                            navigate={navigate}
-                            onClose={onClose}
-                        />
-                    </AnimatePresence>
-                </div>
-
-                {/* Footer Navigation */}
-                <div className="p-6 md:p-8 border-t border-border-subtle bg-gray-50/50 dark:bg-black/20 flex items-center justify-between">
+                    {/* Close Button */}
                     <button
-                        onClick={prevSlide}
-                        className="p-3 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
-                        aria-label="Previous Slide"
+                        onClick={onClose}
+                        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 transition-colors"
                     >
-                        <ChevronLeft size={24} className="text-text-muted" />
+                        <X size={24} className="text-text-primary" />
                     </button>
 
-                    <div className="flex gap-3">
-                        {slides.map((_, idx) => (
-                            <button
-                                key={idx}
-                                onClick={() => setCurrentSlide(idx)}
-                                className={`h-2.5 rounded-full transition-all duration-300 ${currentSlide === idx
-                                    ? "w-8 bg-primary"
-                                    : "w-2.5 bg-gray-300 dark:bg-white/20 hover:bg-primary/50"
-                                    }`}
-                                aria-label={`Go to slide ${idx + 1}`}
+                    {/* Slides Container */}
+                    <div className="flex-1 relative overflow-hidden p-6 md:p-12">
+                        <AnimatePresence mode="wait">
+                            <SlideContent
+                                key={currentSlide}
+                                step={currentSlide}
+                                navigate={navigate}
+                                onClose={onClose}
+                                onOpenContact={() => setIsContactOpen(true)}
                             />
-                        ))}
+                        </AnimatePresence>
                     </div>
 
-                    <button
-                        onClick={nextSlide}
-                        className="p-3 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
-                        aria-label="Next Slide"
-                    >
-                        <ChevronRight size={24} className="text-text-muted" />
-                    </button>
-                </div>
-            </motion.div>
-        </div>
+                    {/* Footer Navigation */}
+                    <div className="p-6 md:p-8 border-t border-border-subtle bg-gray-50/50 dark:bg-black/20 flex items-center justify-between">
+                        <button
+                            onClick={prevSlide}
+                            className="p-3 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+                            aria-label="Previous Slide"
+                        >
+                            <ChevronLeft size={24} className="text-text-muted" />
+                        </button>
+
+                        <div className="flex gap-3">
+                            {slides.map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setCurrentSlide(idx)}
+                                    className={`h-2.5 rounded-full transition-all duration-300 ${currentSlide === idx
+                                        ? "w-8 bg-primary"
+                                        : "w-2.5 bg-gray-300 dark:bg-white/20 hover:bg-primary/50"
+                                        }`}
+                                    aria-label={`Go to slide ${idx + 1}`}
+                                />
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={nextSlide}
+                            className="p-3 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+                            aria-label="Next Slide"
+                        >
+                            <ChevronRight size={24} className="text-text-muted" />
+                        </button>
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* Contact Modal Layered on Top */}
+            <AnimatePresence>
+                {isContactOpen && (
+                    <ContactModal
+                        isOpen={isContactOpen}
+                        onClose={() => setIsContactOpen(false)}
+                    />
+                )}
+            </AnimatePresence>
+        </React.Fragment>
     );
 };
 
-const SlideContent = ({ step, navigate, onClose }) => {
+const SlideContent = ({ step, navigate, onClose, onOpenContact }) => {
     switch (step) {
         case 0: return <Slide1 />;
         case 1: return <Slide2 />;
         case 2: return <Slide3 />;
         case 3: return <Slide4 />;
-        case 4: return <Slide5 navigate={navigate} onClose={onClose} />;
+        case 4: return <Slide5 navigate={navigate} onClose={onClose} onOpenContact={onOpenContact} />;
         default: return null;
     }
 };
@@ -406,7 +422,7 @@ const Slide4 = () => (
 );
 
 /* ---------------- SLIDE 5: CTA ---------------- */
-const Slide5 = ({ navigate, onClose }) => (
+const Slide5 = ({ navigate, onClose, onOpenContact }) => (
     <motion.div
         className="h-full flex flex-col justify-center items-center text-center px-4"
         initial={{ opacity: 0, scale: 0.9 }}
@@ -444,10 +460,10 @@ const Slide5 = ({ navigate, onClose }) => (
             </Button>
             <Button
                 variant="outline"
-                onClick={() => window.location.href = "mailto:krishsanghavi09@gmail.com"}
+                onClick={onOpenContact}
                 className="h-14 px-10 text-lg rounded-full border-2 border-border-subtle hover:bg-gray-50 dark:hover:bg-white/10 hover:scale-105 transition-transform"
             >
-                Schedule Demo
+                Request Demo
             </Button>
         </div>
     </motion.div>

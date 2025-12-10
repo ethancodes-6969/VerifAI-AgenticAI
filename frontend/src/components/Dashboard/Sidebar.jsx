@@ -18,10 +18,10 @@ const SidebarItem = ({ icon: Icon, label, to, collapsed }) => {
         <NavLink
             to={to}
             className={({ isActive }) => cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative",
+                "flex items-center gap-3 px-3 py-2.5 transition-all duration-200 group relative border-l-4",
                 isActive
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-text-muted hover:bg-gray-100 dark:hover:bg-white/5 hover:text-text-primary"
+                    ? "border-primary bg-primary/5 text-primary font-medium"
+                    : "border-transparent text-text-muted hover:bg-gray-100 dark:hover:bg-white/5 hover:text-text-primary"
             )}
         >
             <Icon size={20} className="shrink-0" />
@@ -78,9 +78,9 @@ const Sidebar = ({ isOpen, onClose, isMobile }) => {
 
                     <div className="space-y-1 flex-1">
                         <SidebarItem icon={LayoutDashboard} label="Dashboard" to="/dashboard" />
-                        <SidebarItem icon={CreditCard} label="Transactions" to="/dashboard/transactions" />
-                        <SidebarItem icon={Settings} label="Settings" to="/dashboard/settings" />
-                        <SidebarItem icon={User} label="Profile" to="/dashboard/profile" />
+                        <SidebarItem icon={CreditCard} label="Transactions" to="/transactions" />
+                        <SidebarItem icon={Settings} label="Settings" to="/settings" />
+                        <SidebarItem icon={User} label="Profile" to="/profile" />
                     </div>
 
                     <div className="pt-4 border-t border-border-subtle">
@@ -117,11 +117,11 @@ const Sidebar = ({ isOpen, onClose, isMobile }) => {
                 </button>
             </div>
 
-            <div className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
+            <div className="flex-1 py-6 space-y-1 overflow-y-auto">
                 <SidebarItem icon={LayoutDashboard} label="Dashboard" to="/dashboard" collapsed={collapsed} />
-                <SidebarItem icon={CreditCard} label="Transactions" to="/dashboard/transactions" collapsed={collapsed} />
-                <SidebarItem icon={Settings} label="Settings" to="/dashboard/settings" collapsed={collapsed} />
-                <SidebarItem icon={User} label="Profile" to="/dashboard/profile" collapsed={collapsed} />
+                <SidebarItem icon={CreditCard} label="Transactions" to="/transactions" collapsed={collapsed} />
+                <SidebarItem icon={Settings} label="Settings" to="/settings" collapsed={collapsed} />
+                <SidebarItem icon={User} label="Profile" to="/profile" collapsed={collapsed} />
             </div>
 
             <div className="p-3 border-t border-border-subtle">

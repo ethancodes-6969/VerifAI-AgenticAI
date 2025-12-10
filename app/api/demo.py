@@ -9,6 +9,9 @@ logger = logging.getLogger(__name__)
 class DemoRequest(BaseModel):
     email: EmailStr
     role: str
+    name: str
+    company: str
+    requirement: str = None
 
 @router.post("/request")
 async def request_demo(request: DemoRequest):
@@ -20,7 +23,10 @@ async def request_demo(request: DemoRequest):
         email_service = EmailService()
         result = await email_service.send_demo_request_email(
             user_email=request.email,
-            user_role=request.role
+            user_role=request.role,
+            user_name=request.name,
+            user_company=request.company,
+            user_requirement=request.requirement
         )
         
         if not result.get("success"):

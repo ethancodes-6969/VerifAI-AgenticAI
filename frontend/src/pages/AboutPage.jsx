@@ -19,54 +19,7 @@ import myPhoto from "../assets/my-photo.jpg";
 import DemoSlideshow from './DemoSlideshow';
 
 
-// --- Contact Modal Component (Reused for consistency) ---
-const ContactModal = ({ isOpen, onClose }) => {
-    if (!isOpen) return null;
-
-    return (
-        <React.Fragment>
-            <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity"
-                onClick={onClose}
-            />
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="bg-white dark:bg-gray-900 w-full max-w-md rounded-2xl shadow-2xl p-6 pointer-events-auto border border-white/10"
-                >
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-xl font-bold text-text-primary">Schedule a Demo</h3>
-                        <button onClick={onClose}><X size={20} className="text-text-muted" /></button>
-                    </div>
-
-                    <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); onClose(); }}>
-                        <div>
-                            <label className="block text-sm font-medium text-text-muted mb-1">Work Email</label>
-                            <input
-                                type="email"
-                                placeholder="you@company.com"
-                                className="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-white/5 border border-border-subtle focus:border-primary outline-none transition-colors"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-text-muted mb-1">Role</label>
-                            <select className="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-white/5 border border-border-subtle focus:border-primary outline-none transition-colors">
-                                <option>Risk Manager</option>
-                                <option>Developer</option>
-                                <option>Executive</option>
-                            </select>
-                        </div>
-                        <Button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white">
-                            Submit Request
-                        </Button>
-                    </form>
-                </motion.div>
-            </div>
-        </React.Fragment>
-    );
-};
+import ContactModal from '../components/ContactModal';
 
 const AboutPage = () => {
     const navigate = useNavigate();
@@ -259,7 +212,7 @@ const AboutPage = () => {
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 relative overflow-hidden"
+                        className="p-8 sm:p-12 rounded-3xl bg-white/60 dark:bg-white/5 backdrop-blur-md border border-border-subtle shadow-xl relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-[40px] transform translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
